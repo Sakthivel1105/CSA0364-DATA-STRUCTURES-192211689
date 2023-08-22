@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
+#define MAX_SIZE 100
+struct Stack {
+    int data[MAX_SIZE];
+    int top;
+};
+void initialize(struct Stack* stack) {
+    stack->top = -1;
+}
+bool isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+void push(struct Stack* stack, int value) {
+    if (stack->top == MAX_SIZE - 1) {
+        printf("Stack overflow\n");
+        return;
+    }
+    stack->data[++stack->top] = value;
+}
+int pop(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack underflow\n");
+        return -1;
+    }
+    return stack->data[stack->top--];
+}
+int evaluatePrefixExpression(char expression[]) {
+    struct Stack stack;
+    initialize(&stack);
+
+    int length = strlen(expression);
+
+    for (int i = length - 1; i >= 0; i--) {
+        if (isdigit(expression[i])) {
+            push(&stack, expression[i] - '0');  // Convert char to int
+        } else if (expression[i] == '+' || expression[i] == '-' ||
+                   expression[i] == '*' || expression[i] == '/') {
+            int operand1 = pop(&stack);
+            int operand2 = pop(&stack);
+
+            switch (expression[i]) {
+                case '+':
+                    push(&stack, operand1 + operand2);
+                    break;
+                case '-':
+                    push(&stack, operand1 - operand2);
+                    break;
+                case '*':
+                    push(&stack, operand1 * operand2);
+                    break;
+                case '/':
+                    push(&stack, operand1 / operand2);
+                    break;
+            }
+        }
+    }
+
+    return pop(&stack);
+}
+
+int main() {
+    char expression[MAX_SIZE];
+
+    printf("Enter an expression in prefix notation: ");
+    gets(expression);
+
+    int result = evaluatePrefixExpression(expression);
+
+    printf("Result: %d\n", result);
+
+    return 0;
+}
