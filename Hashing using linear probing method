@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define TABLE_SIZE 10
+struct HashTable {
+    int data[TABLE_SIZE];
+    bool occupied[TABLE_SIZE];
+};
+void initialize(struct HashTable* hashTable) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        hashTable->occupied[i] = false;
+    }
+}
+int hashFunction(int key) {
+    return key % TABLE_SIZE;
+}
+void insert(struct HashTable* hashTable, int value) {
+    int key = hashFunction(value);
+    int index = key;
+
+    while (hashTable->occupied[index]) {
+        index = (index + 1) % TABLE_SIZE;
+        if (index == key) {
+            printf("Hash table is full\n");
+            return;
+        }
+    }
+
+    hashTable->data[index] = value;
+    hashTable->occupied[index] = true;
+}
+bool search(struct HashTable* hashTable, int value) {
+    int key = hashFunction(value);
+    int index = key;
+
+    while (hashTable->occupied[index]) {
+        if (hashTable->data[index] == value) {
+            return true;
+        }
+        index = (index + 1) % TABLE_SIZE;
+        if (index == key) {
+            break;
+        }
+    }
+
+    return false;
+}
+
+int main() {
+    struct HashTable hashTable;
+    initialize(&hashTable);
+
+    insert(&hashTable, 10);
+    insert(&hashTable, 20);
+    insert(&hashTable, 30);
+
+    int searchValue = 20;
+    if (search(&hashTable, searchValue)) {
+        printf("%d found in hash table\n", searchValue);
+    } else {
+        printf("%d not found in hash table\n", searchValue);
+    }
+
+    return 0;
+}
